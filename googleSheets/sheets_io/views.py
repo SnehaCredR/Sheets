@@ -44,11 +44,15 @@ def index(request):
 	spreadsheetId = "1PcMvN7940wtFR1cRD88I3U_qEcq-6VfFDYAaVoXP_K4"
 	sheet_range = "A:E"
 
-	# response, body = gauth.getSheet(http, spreadsheetId, sheet_range)
+	response, body = gauth.getSheet(http, spreadsheetId, sheet_range)
+
+	output = "Read data for Sheet:{} <br/> {}".format(spreadsheetId, json.dumps(body))
 
 	updSheet = gauth.updateSheet(http, spreadsheetId)
 	updSheet.updateCells([["A", "B", "C"], ["D", "E", "F"]], 0, (6, 0))
 	_, body = updSheet.execute()
 
-	return HttpResponse(json.dumps(body))
+	output += "<br/><br/>Data after writing to Sheet:{} <br/> {}".format(spreadsheetId, json.dumps(body))
+
+	return HttpResponse(output)
 
