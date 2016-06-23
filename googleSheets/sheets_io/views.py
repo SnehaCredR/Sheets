@@ -41,18 +41,27 @@ def index(request):
 	http = CREDENTIALS.authorize(httplib2.Http())
 
 	# spreadsheetId = "1QqaElHbfvp-sRlG6A5NXBZb8-PsoPmq4wy3AGRlJ9OU"
-	spreadsheetId = "1PcMvN7940wtFR1cRD88I3U_qEcq-6VfFDYAaVoXP_K4"
+	# spreadsheetId = "1PcMvN7940wtFR1cRD88I3U_qEcq-6VfFDYAaVoXP_K4"
+
+	input_spreadsheets = ["1UmwLtvxpgiHOjlYG0HxWtz6E5Cjz-FNzgtq3W3CKOA8",
+						"1a6cx6OUBg5ZTio_GGhz5pPoe_yjVLZyK6sOwNdq-Pno",
+						"1QMFSifwgRcrsdStl-qdERdxwx9xrgfJcHY7hD8Fuom0"]
+
+	output_spreadsheet = "1VI2M5t5pBlA71aFAaMEmo_pN83_r9Y8LN4llBlU2oHw"
 	sheet_range = "A:E"
+	input_mat = []
 
-	response, body = gauth.getSheet(http, spreadsheetId, sheet_range)
+	for spreadsheetId in input_spreadsheets:
+		_, body = gauth.getSheet(http, spreadsheetId, sheet_range)
+		input_mat.extend(body["values"])
 
-	output = "Read data for Sheet:{} <br/> {}".format(spreadsheetId, json.dumps(body))
+	output = "Read data from Sheet:{} <br/> {}".format(', '.join(input_spreadsheets), json.dumps(input_mat))
 
-	updSheet = gauth.updateSheet(http, spreadsheetId)
-	updSheet.updateCells([["A", "B", "C"], ["D", "E", "F"]], 0, (6, 0))
+	updSheet = gauth.updateSheet(http, output_spreadsheet)
+	updSheet.updateCells(input_mat, 0, (0, 0))
 	_, body = updSheet.execute()
 
-	output += "<br/><br/>Data after writing to Sheet:{} <br/> {}".format(spreadsheetId, json.dumps(body))
+	output += "<br/><br/>Data after writing to Sheet:{} <br/> {}".format(output_spreadsheet, json.dumps(body))
 
 	return HttpResponse(output)
 
