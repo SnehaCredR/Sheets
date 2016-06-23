@@ -19,7 +19,7 @@ class updateSheet:
 		self.data = {"requests": self.modif_data}
 
 	def execute(self):
-		print json.dumps(self.data)
+		# print json.dumps(self.data)
 		response, content = self.http.request(uri=self.url, method="POST", body=json.dumps(self.data))
 		return response, json.loads(content)
 
