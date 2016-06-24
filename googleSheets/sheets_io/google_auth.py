@@ -3,8 +3,8 @@
 import json
 
 
-def getSheet(http, sheet_id, sheet_range, sheet_no=1):
-	url = "https://sheets.googleapis.com/v4/spreadsheets/{0}/values/Sheet{1}!{2}".format(sheet_id, sheet_no, sheet_range)
+def getSheet(http, sheet_id, sheet_range, sheet_name):
+	url = "https://sheets.googleapis.com/v4/spreadsheets/{0}/values/{1}!{2}".format(sheet_id, sheet_name, sheet_range)
 	response, content = http.request(uri=url, method="GET")
 	return response, json.loads(content)
 
