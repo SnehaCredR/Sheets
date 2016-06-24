@@ -3,10 +3,17 @@
 import json
 
 
-def getSheet(http, sheet_id, sheet_range):
-	url = "https://sheets.googleapis.com/v4/spreadsheets/{}/values/{}".format(sheet_id, sheet_range)
+def getSheet(http, sheet_id, sheet_range, sheet_no=1):
+	url = "https://sheets.googleapis.com/v4/spreadsheets/{0}/values/Sheet{1}!{2}".format(sheet_id, sheet_no, sheet_range)
 	response, content = http.request(uri=url, method="GET")
 	return response, json.loads(content)
+
+
+def getSheets(http, sheet_id, sheet_range, sheet_nos):
+	output = []
+	for sheet_no in sheet_nos:
+		output.append(getSheet(http, sheet_id, sheet_range, sheet_no))
+	return output
 
 
 class updateSheet:
