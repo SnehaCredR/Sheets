@@ -5,7 +5,7 @@ from django.db import models
 # Create your models here.
 
 
-class Logs(models.Model):
+class Log(models.Model):
     from_sheet = models.CharField(max_length=100)
     to_sheet = models.CharField(max_length=100)
     from_tab = models.CharField(max_length=100)
