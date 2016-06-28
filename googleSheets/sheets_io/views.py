@@ -51,7 +51,7 @@ def index(request):
 	input_mat = []
 
 	body = service.spreadsheets().values().batchGet(spreadsheetId=spreadsheetId,
-													ranges=[ "%s!%s" % (city, sheet_range) for city in cities]
+													ranges=["%s!%s" % (city, sheet_range) for city in cities]
 													).execute()
 	for valueRange in body["valueRanges"]:
 		values = valueRange.get("values", [])
@@ -64,7 +64,28 @@ def index(request):
 
 	output = "Read data from Sheet:{} <br/> {}".format(spreadsheetId, len(input_mat))
 
-	body = service.spreadsheets().values().update(spreadsheetId=output_spreadsheet, range=out + '!A2:G', body ={"values": input_mat }, valueInputOption = "RAW").execute()
+	offset = 1
+
+	for i, row in enumerate(input_mat):
+		product_id = row[3]
+		try:
+			detail = get_bike_details(product_id)
+			row.append(detail["payload"]["make"])
+			row.append(detail["payload"]["model"])
+			row.append(detail["payload"]["date_of_mfg"])
+			row.append("")
+			row.append("")
+			inspector = detail["payload"].get("inspector", "")
+			body = service.spreadsheets().values().update(spreadsheetId=output_spreadsheet, range=out + '!A{}:M'.format(i+1 + offset),
+														  body={"values": [row]}, valueInputOption="RAW").execute()
+			if inspector:
+				row.append(inspector["first_name"] + " " + inspector["last_name"])
+			print "Uploaded Product:{}".format(product_id)
+		except:
+			print "Error in Product:{}".format(product_id)
+			continue
+
+	# body = service.spreadsheets().values().update(spreadsheetId=output_spreadsheet, range=out + '!A2:M', body={"values": input_mat }, valueInputOption = "RAW").execute()
 	output += '<br/><br/>Data after writing to Sheet:{} <br/> {}'.format(output_spreadsheet, json.dumps(body))
 	return HttpResponse(output)
 
