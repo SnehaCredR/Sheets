@@ -64,6 +64,16 @@ def index(request):
 
 	output = "Read data from Sheet:{} <br/> {}".format(spreadsheetId, len(input_mat))
 
-	body = service.spreadsheets().values().update(spreadsheetId=output_spreadsheet, range=out + '!A7:E', body ={"values": input_mat }, valueInputOption = "RAW").execute()
+	body = service.spreadsheets().values().update(spreadsheetId=output_spreadsheet, range=out + '!A2:G', body ={"values": input_mat }, valueInputOption = "RAW").execute()
 	output += '<br/><br/>Data after writing to Sheet:{} <br/> {}'.format(output_spreadsheet, json.dumps(body))
 	return HttpResponse(output)
+
+
+def get_bike_details(bike_id):
+	url = "https://api.credr.com/v1/product/vehicle/detail/{}/".format(bike_id)
+	http = httplib2.Http()
+	headers = {"Accept": "application/json", "X-Auth": "1234567890"}
+	_, response = http.request(url, headers=headers)
+	return json.loads(response)
+
+
