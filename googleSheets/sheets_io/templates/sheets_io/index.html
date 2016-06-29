@@ -1,0 +1,24 @@
+<html>
+<head>
+    <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $("#start_btn").click(function(){
+                $("#success").text("Processing....");
+                $.ajax({
+                url: '/sheets/auth/',
+                timeout: 10000000,
+                success:function(){
+                    $("#success").text("Successful")
+                }
+                })
+            });
+        });
+    </script>
+</head>
+<body>
+<h2 align="center">Google Sheets</h2>
+<button id="start_btn" value="START">START</button>
+<p id="success"></p>
+</body>
+</html>
