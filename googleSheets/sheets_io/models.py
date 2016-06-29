@@ -11,11 +11,10 @@ class Log(models.Model):
     from_tab = models.CharField(max_length=100)
     to_tab = models.CharField(max_length=100)
     updated_at = models.DateTimeField(auto_now=True)
-    updated_row = models.CharField(max_length=10)
-    updated_col = models.CharField(max_length=10)
+    updated_row = models.IntegerField(default=0)
+    updated_col = models.IntegerField(default=0)
     updated_range = models.CharField(max_length=100)
     status = models.CharField(max_length=50)
 
     def __str__(self):
-        return "{}!{} -> {}!{}: {},{}".format(self.from_sheet,self.from_tab,self.to_sheet,self.to_tab,str(self.updated_at),
-                                           self.updated_row)
+        return "{}!{} -> {}!{}: {}".format(self.from_sheet, self.from_tab, self.to_sheet, self.to_tab, self.status)
