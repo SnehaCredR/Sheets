@@ -40,7 +40,6 @@ def index(request):
 	spreadsheetId = sheet_settings.FROM_SHEET
 	output_spreadsheet = sheet_settings.TO_SHEET
 	out = sheet_settings.TO_TAB
-	sheet_range = sheet_settings.RANGE
 	tabs = sheet_settings.FROM_TABS
 
 	http = CREDENTIALS.authorize(httplib2.Http())
@@ -50,7 +49,6 @@ def index(request):
 	range_pattern = re.compile(r"\w+!A(\d+):M")
 
 	for tab in tabs:
-		row_number = 0
 
 		# Get recent Log
 		recent_logs = Log.objects.order_by('-updated_at').filter(from_sheet=spreadsheetId, to_sheet=output_spreadsheet, from_tab=tab,
@@ -59,11 +57,13 @@ def index(request):
 		if recent_logs:
 			last_log = recent_logs[0]
 		start_row = range_pattern.findall(last_log.updated_range)
+		offset = 2
 		if not start_row:
-			start_row = "2"
+			sheet_range = sheet_settings.RANGE.format(1)
 		else:
 			start_row = start_row[0]
-		offset = int(start_row) + last_log.updated_row
+			offset = int(start_row) + last_log.updated_row
+			sheet_range = sheet_settings.RANGE.format(offset)
 
 		# Read Data from Sheet
 		body = service.spreadsheets().values().get(spreadsheetId=spreadsheetId,
@@ -74,6 +74,7 @@ def index(request):
 		values = body.get("values", [])
 		if not values:
 			continue
+
 		top_row = values.pop(0)
 		# Remove the top headers
 		while not top_row or top_row[0] == "":
@@ -81,9 +82,6 @@ def index(request):
 
 		# Iterate through each row
 		for row_no, value in enumerate(values):
-
-			if row_no + 1 < offset:
-				continue
 
 			# Input Values from the sheet
 			row = [value[0], value[1], value[3], value[4]]
