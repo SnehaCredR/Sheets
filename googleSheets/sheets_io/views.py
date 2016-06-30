@@ -58,8 +58,9 @@ def index(request):
 			last_log = recent_logs[0]
 		start_row = range_pattern.findall(last_log.updated_range)
 		offset = 2
+
 		if not start_row:
-			sheet_range = sheet_settings.RANGE.format(1)
+			sheet_range = sheet_settings.RANGE.format(offset-1)
 		else:
 			start_row = start_row[0]
 			offset = int(start_row) + last_log.updated_row
