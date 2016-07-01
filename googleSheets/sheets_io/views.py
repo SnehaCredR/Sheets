@@ -106,11 +106,16 @@ def index(request):
 				row.append(detail["payload"]["make"])
 				row.append(detail["payload"]["model"])
 				row.append(detail["payload"]["date_of_mfg"])
-				row.append("")
+				product = get_merchant(product_id)
+				merchant_id = product["product"]["merchant"]
+				dealer = get_dealer(merchant_id)
+				dealer_name = dealer["payload"]["first_name"] + " " + dealer["payload"]["last_name"]
+				row.append(dealer_name)
 				row.append("")
 				inspector = detail["payload"].get("inspector", "")
 				if inspector:
 					row.append(inspector["first_name"] + " " + inspector["last_name"])
+
 				print "Uploaded Product:{}".format(product_id)
 				# Push the data to sheet
 				body = service.spreadsheets().values().update(spreadsheetId=output_spreadsheet,
@@ -121,7 +126,7 @@ def index(request):
 									   tab=tab,
 									   out=out,
 									   body=body)
-			except:
+			except ValueError:
 				print "Error in Product:{}".format(product_id)
 				# Push the data to sheet
 				body = service.spreadsheets().values().update(spreadsheetId=output_spreadsheet,
@@ -178,6 +183,23 @@ def get_bike_details(bike_id):
 	url = "https://api.credr.com/v1/product/vehicle/detail/{}/".format(bike_id)
 	http = httplib2.Http()
 	headers = {"Accept": "application/json", "X-Auth": "1234567890"}
+	_, response = http.request(url, headers=headers)
+	return json.loads(response)
+
+
+def get_merchant(product_id):
+	prod_id = re.findall(r"-(\d+)$", product_id)[0]
+	url = "https://api.credr.com/v1/product/{}/".format(prod_id)
+	http = httplib2.Http()
+	headers = {"Accept": "application/json", "X-Auth": "1234567890"}
+	_, response = http.request(url, headers=headers)
+	return json.loads(response)
+
+
+def get_dealer(merchant_id):
+	url = "https://api.credr.com/api/v1/user/{}/".format(merchant_id)
+	http = httplib2.Http()
+	headers = {"Accept": "application/json", "Authorization": "Token 4f3bc9c44ac17973025d8288c5e578a43996737e"}
 	_, response = http.request(url, headers=headers)
 	return json.loads(response)
 
