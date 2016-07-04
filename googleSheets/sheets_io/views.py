@@ -15,7 +15,8 @@ CLIENT_SECRET_FILE = sheet_settings.CLIENT_SECRET_FILE
 CREDENTIALS_FILE = sheet_settings.CREDENTIALS_FILE
 FLOW = client.flow_from_clientsecrets(CLIENT_SECRET_FILE,
 									  scope=SCOPES,
-									  redirect_uri="/sheets/index")
+									  redirect_uri="/sheets/index"
+									  )
 STORAGE = file.Storage(CREDENTIALS_FILE)
 CREDENTIALS = STORAGE.get()
 
@@ -25,7 +26,9 @@ def auth(request):
 	auth_uri = FLOW.step1_get_authorize_url()
 	if CREDENTIALS and not CREDENTIALS.invalid:
 		return HttpResponseRedirect(reverse("sheets_io:index"))
-	return HttpResponseRedirect(auth_uri)
+	http=httplib2.Http()
+	_,body=http.request(auth_uri)
+	return HttpResponse(body)
 
 
 def index(request):
