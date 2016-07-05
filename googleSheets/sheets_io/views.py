@@ -99,18 +99,20 @@ def index(request):
 				else:
 					row.extend([""] * 1)
 
-			product_id = row[3]
+			product_id = row[2]
+			veh_id = row[3]
 			try:
 				# Read data from the details API
 				detail = get_bike_details(product_id)
-				row.append(detail["payload"]["make"])
-				row.append(detail["payload"]["model"])
-				row.append(detail["payload"]["date_of_mfg"])
+				row.append(detail[0]['make']['name'])
+				row.append(detail[0]['model']['name'])
+				row.append(detail[0]['date_of_mfg'])
+				dealer_name = detail[0]["product_merchant_detail"]["first_name"] + " " + detail[0]["product_merchant_detail"]["last_name"]
+				row.append(dealer_name)
 				row.append("")
-				row.append("")
-				inspector = detail["payload"].get("inspector", "")
-				if inspector:
-					row.append(inspector["first_name"] + " " + inspector["last_name"])
+				inspector = get_inspector(veh_id)
+				inspector_name = inspector["payload"]["inspector"]["first_name"]+ " "+inspector["payload"]["inspector"]["last_name"]
+				row.append(inspector_name)
 				print "Uploaded Product:{}".format(product_id)
 				# Push the data to sheet
 				body = service.spreadsheets().values().update(spreadsheetId=output_spreadsheet,
@@ -175,9 +177,17 @@ def error_log(last_log, **params):
 
 
 def get_bike_details(bike_id):
-	url = "https://api.credr.com/v1/product/vehicle/detail/{}/".format(bike_id)
+	url = "http://api.credr.com/v1/product/?registration_number={}".format(bike_id)
 	http = httplib2.Http()
 	headers = {"Accept": "application/json", "X-Auth": "1234567890"}
+	_, response = http.request(url, headers=headers)
+	return json.loads(response)
+
+
+def get_inspector(veh_id):
+	url = "http://api.credr.com/v1/product/vehicle/detail/{}/".format(veh_id)
+	http = httplib2.Http()
+	headers = {"Accept": "application/json"}
 	_, response = http.request(url, headers=headers)
 	return json.loads(response)
 
