@@ -15,7 +15,7 @@ CLIENT_SECRET_FILE = sheet_settings.CLIENT_SECRET_FILE
 CREDENTIALS_FILE = sheet_settings.CREDENTIALS_FILE
 FLOW = client.flow_from_clientsecrets(CLIENT_SECRET_FILE,
 									  scope=SCOPES,
-									  redirect_uri="http://localhost:8000/sheets/index")
+									  redirect_uri="http://shelog.credr.io/sheets/index")
 STORAGE = file.Storage(CREDENTIALS_FILE)
 CREDENTIALS = STORAGE.get()
 
