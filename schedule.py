@@ -13,5 +13,5 @@ def update_sheet():
 if __name__ == '__main__':
     logging.basicConfig()
     schedular = BlockingScheduler()
-    schedular.add_job(update_sheet, 'interval', hour="0")
+    schedular.add_job(update_sheet,'cron', day_of_week='mon-sat', hour=0, minute=30)
     schedular.start()
