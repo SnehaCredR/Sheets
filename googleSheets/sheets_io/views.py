@@ -15,9 +15,12 @@ CLIENT_SECRET_FILE = sheet_settings.CLIENT_SECRET_FILE
 CREDENTIALS_FILE = sheet_settings.CREDENTIALS_FILE
 FLOW = client.flow_from_clientsecrets(CLIENT_SECRET_FILE,
 									  scope=SCOPES,
-									  redirect_uri="http://shelog.credr.io/sheets/index")
+									  redirect_uri="http://shelog.credr.io/sheets/index/")
 STORAGE = file.Storage(CREDENTIALS_FILE)
 CREDENTIALS = STORAGE.get()
+
+
+
 
 
 def auth(request):
@@ -42,9 +45,32 @@ def index(request):
 	out = sheet_settings.TO_TAB
 	tabs = sheet_settings.FROM_TABS
 
+
 	http = CREDENTIALS.authorize(httplib2.Http())
 	discovery_url = 'https://sheets.googleapis.com/$discovery/rest?version=v4'
 	service = discovery.build("sheets", "v4", http=http, discoveryServiceUrl=discovery_url)
+
+	# ##Add dealer name to the copy of output test sheet##
+	# sheet_id = "1vTsk8FPl3KqKeFILDjgCu-V4grHGn8Rs7tNGH7YCYCI"
+	# # Read Data from Sheet
+	# body = service.spreadsheets().values().get(spreadsheetId=sheet_id,
+	# 													range="B2:K").execute()
+	# values = body.get("values", [])
+    #
+	# temp = 810
+	# # for value in values:
+	# # 	reg_no = value[2]
+	# # 	try:
+	# # 		detail = get_bike_details(reg_no)
+	# # 		dealer_name = detail[0]["product_merchant_detail"]["first_name"] + " " + detail[0]["product_merchant_detail"]["last_name"]
+	# # 		service.spreadsheets().values().update(spreadsheetId=sheet_id,
+	# # 														  range='I{}:I'.format(temp),
+	# # 														  body={"values": [[dealer_name]]}, valueInputOption="RAW").execute()
+	# # 		print "Added " + reg_no
+	# # 	except:
+	# # 		print "Error"
+    # #
+	# # 	temp += 1
 
 	range_pattern = re.compile(r"\w+!A(\d+):M")
 
@@ -111,7 +137,7 @@ def index(request):
 				row.append(dealer_name)
 				row.append("")
 				inspector = get_inspector(veh_id)
-				inspector_name = inspector["payload"]["inspector"]["first_name"]+ " "+inspector["payload"]["inspector"]["last_name"]
+				inspector_name = inspector["payload"]["inspector"]["first_name"] + " " + inspector["payload"]["inspector"]["last_name"]
 				row.append(inspector_name)
 				print "Uploaded Product:{}".format(product_id)
 				# Push the data to sheet
