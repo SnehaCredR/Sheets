@@ -73,6 +73,7 @@ def index(request):
 	# # 	temp += 1
 
 	range_pattern = re.compile(r"\w+!A(\d+):M")
+	out_offset = 0
 
 	for tab in tabs:
 
@@ -106,6 +107,7 @@ def index(request):
 		# Remove the top headers
 		while not top_row or top_row[0] == "":
 			top_row = values.pop(0)
+
 
 		# Iterate through each row
 		for row_no, value in enumerate(values):
@@ -142,7 +144,7 @@ def index(request):
 				print "Uploaded Product:{}".format(product_id)
 				# Push the data to sheet
 				body = service.spreadsheets().values().update(spreadsheetId=output_spreadsheet,
-															  range=out + '!A{}:M'.format(offset),
+															  range=out + '!A{}:M'.format(out_offset+offset),
 															  body={"values": [row]}, valueInputOption="RAW").execute()
 				last_log = success_log(last_log, spreadsheetId=spreadsheetId,
 									   output_spreadsheet=output_spreadsheet,
@@ -153,7 +155,7 @@ def index(request):
 				print "Error in Product:{}".format(product_id)
 				# Push the data to sheet
 				body = service.spreadsheets().values().update(spreadsheetId=output_spreadsheet,
-															  range=out + '!A{}:M'.format(offset),
+															  range=out + '!A{}:M'.format(out_offset+offset),
 															  body={"values": [row]}, valueInputOption="RAW").execute()
 				last_log = error_log(last_log, spreadsheetId=spreadsheetId,
 										output_spreadsheet=output_spreadsheet,
@@ -161,6 +163,9 @@ def index(request):
 										out=out,
 										offset=offset)
 			offset += 1
+		out_offset += offset
+		out_offset -= 2
+
 	return HttpResponse("Success")
 
 

@@ -1,7 +1,7 @@
 import os
 
-FROM_SHEET = "1VBRX1BO5HBEaCaurkF2I4KkUusIN7ZjGq6Oa_r4Iijw"
-FROM_TABS = ['Bangalore', 'Mumbai', 'Delhi']
+FROM_SHEET = "15cuTVdn0kYaXqL_HdQRLqDmuMLO9xAAyansc79nE41s"
+FROM_TABS = ['Bangalore', 'Mumbai', 'Delhi', 'Hyderabad', 'Pune' ]
 RANGE = "A{}:AI"
 
 TO_SHEET = "1QnHjOvqH9kVU9mMTer_Pyc_1hMFkOKeKY2dDW0tAXJ8"
